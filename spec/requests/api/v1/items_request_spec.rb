@@ -1,41 +1,41 @@
 require 'rails_helper'
 
 describe 'Items API' do
+  before :each do
+    @merchant1 = create(:merchant)
+    @merchant2 = create(:merchant)
+    @merchant3 = create(:merchant)
+    @merchant4 = create(:merchant)
+
+
+    @item1 = create(:item, merchant: @merchant1)
+    @item2 = create(:item, merchant: @merchant1)
+    @item3 = create(:item, merchant: @merchant1)
+    @item4 = create(:item, merchant: @merchant1)
+    @item5 = create(:item, merchant: @merchant1)
+    @item6 = create(:item, merchant: @merchant1)
+    @item7 = create(:item, merchant: @merchant1)
+    @item8 = create(:item, merchant: @merchant2)
+    @item9 = create(:item, merchant: @merchant2)
+    @item10 = create(:item, merchant: @merchant2)
+    @item11 = create(:item, merchant: @merchant2)
+    @item12 = create(:item, merchant: @merchant2)
+    @item13 = create(:item, merchant: @merchant2)
+    @item14 = create(:item, merchant: @merchant2)
+    @item15 = create(:item, merchant: @merchant3)
+    @item16 = create(:item, merchant: @merchant3)
+    @item17 = create(:item, merchant: @merchant3)
+    @item18 = create(:item, merchant: @merchant3)
+    @item19 = create(:item, merchant: @merchant3)
+    @item20 = create(:item, merchant: @merchant3)
+    @item21 = create(:item, merchant: @merchant4)
+    @item22 = create(:item, merchant: @merchant4)
+    @item23 = create(:item, merchant: @merchant4)
+    @item24 = create(:item, merchant: @merchant4)
+    @item25 = create(:item, merchant: @merchant4)
+  end
+
   describe 'happy paths' do
-    before :each do
-      @merchant1 = create(:merchant)
-      @merchant2 = create(:merchant)
-      @merchant3 = create(:merchant)
-      @merchant4 = create(:merchant)
-
-
-      @item1 = create(:item, merchant: @merchant1)
-      @item2 = create(:item, merchant: @merchant1)
-      @item3 = create(:item, merchant: @merchant1)
-      @item4 = create(:item, merchant: @merchant1)
-      @item5 = create(:item, merchant: @merchant1)
-      @item6 = create(:item, merchant: @merchant1)
-      @item7 = create(:item, merchant: @merchant1)
-      @item8 = create(:item, merchant: @merchant2)
-      @item9 = create(:item, merchant: @merchant2)
-      @item10 = create(:item, merchant: @merchant2)
-      @item11 = create(:item, merchant: @merchant2)
-      @item12 = create(:item, merchant: @merchant2)
-      @item13 = create(:item, merchant: @merchant2)
-      @item14 = create(:item, merchant: @merchant2)
-      @item15 = create(:item, merchant: @merchant3)
-      @item16 = create(:item, merchant: @merchant3)
-      @item17 = create(:item, merchant: @merchant3)
-      @item18 = create(:item, merchant: @merchant3)
-      @item19 = create(:item, merchant: @merchant3)
-      @item20 = create(:item, merchant: @merchant3)
-      @item21 = create(:item, merchant: @merchant4)
-      @item22 = create(:item, merchant: @merchant4)
-      @item23 = create(:item, merchant: @merchant4)
-      @item24 = create(:item, merchant: @merchant4)
-      @item25 = create(:item, merchant: @merchant4)
-    end
-
     it 'gets all items, max of 20 per page' do
       get '/api/v1/items'
 
@@ -129,7 +129,7 @@ describe 'Items API' do
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
       created_item = Item.last
 
-      expect(response).to be_successful
+      expect(response).to have_http_status(201)
       expect(created_item.name).to eq(item_params[:name])
       expect(created_item.description).to eq(item_params[:description])
       expect(created_item.unit_price).to eq(item_params[:unit_price])
@@ -137,8 +137,35 @@ describe 'Items API' do
 
       expect{ delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
 
-      expect(response).to be_successful
       expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+      expect(response.status).to eq(204)
+    end
+
+    it 'should ignore any attributes sent by the user which are not allowed and create the item' do
+      item_params = ({
+        name: "value1",
+        description: "value2",
+        unit_price: 100.99,
+        merchant_id: @merchant1.id,
+        sold_price: 99.99
+        })
+
+      headers = {'CONTENT_TYPE' => 'application/json'}
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      created_item = Item.last
+
+      expect(response).to have_http_status(201)
+      expect(created_item[:sold_price]).to eq(nil)
+      expect(created_item.name).to eq(item_params[:name])
+      expect(created_item.description).to eq(item_params[:description])
+      expect(created_item.unit_price).to eq(item_params[:unit_price])
+      expect(created_item.merchant_id).to eq(item_params[:merchant_id])
+
+      expect{ delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
+
+      expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+      expect(response.status).to eq(204)
     end
   end
 
@@ -154,9 +181,45 @@ describe 'Items API' do
       expect(items).to eq([])
     end
 
-    xit 'returns 404 with bad merchant id' do
+    it 'returns 404 with bad merchant id' do
       get '/api/v1/items/12345'
 
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns an error if merchant_id is missing with new item post' do
+      item_params = ({
+        name: "value1",
+        description: "value2",
+        unit_price: 100.99
+        })
+
+      headers = {'CONTENT_TYPE' => 'application/json'}
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(response.status).to eq(422)
+    end
+
+    it 'returns an error if any attribute is missing with new item post' do
+      item_params = ({
+        name: "value1",
+        description: "value2",
+        merchant_id: @merchant1.id
+        })
+
+      headers = {'CONTENT_TYPE' => 'application/json'}
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(response.status).to eq(422)
+    end
+
+    it 'returns not found error if item to be deleted does not exist' do
+      item_id = 1345246257
+      delete "/api/v1/items/#{item_id}"
+
+      expect{Item.find(item_id)}.to raise_error(ActiveRecord::RecordNotFound)
       expect(response.status).to eq(404)
     end
   end
