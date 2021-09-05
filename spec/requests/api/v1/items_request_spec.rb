@@ -114,6 +114,32 @@ describe 'Items API' do
       expect(item[:attributes][:description]).to eq(@item1.description)
       expect(item[:attributes][:unit_price]).to eq(@item1.unit_price)
     end
+
+    it "can create a new item and then delete it" do
+      item_params = ({
+        name: "value1",
+        description: "value2",
+        unit_price: 100.99,
+        merchant_id: @merchant1.id
+        })
+
+      headers = {'CONTENT_TYPE' => 'application/json'}
+
+      # We include this header to make sure that these params are passed as JSON rather than as plain text
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      created_item = Item.last
+
+      expect(response).to be_successful
+      expect(created_item.name).to eq(item_params[:name])
+      expect(created_item.description).to eq(item_params[:description])
+      expect(created_item.unit_price).to eq(item_params[:unit_price])
+      expect(created_item.merchant_id).to eq(item_params[:merchant_id])
+
+      expect{ delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
+
+      expect(response).to be_successful
+      expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe 'sad paths' do
