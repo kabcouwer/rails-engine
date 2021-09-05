@@ -9,14 +9,25 @@ class Api::V1::ItemsController < ApplicationController
   def show
     @item = Item.find(params[:id])
     render json: ItemSerializer.new(@item)
+  rescue ActiveRecord::RecordNotFound
+    not_found
   end
 
   def create
-    render json: Item.create(item_params)
+    @item = Item.create(item_params)
+    if @item.save
+      render json: ItemSerializer.new(@item), status: :created
+    else
+      render json: { errors: @item.errors.full_messages },
+             status: :unprocessable_entity
+    end
   end
 
   def destroy
-    render json: Item.delete(params[:id])
+    item = Item.find(params[:id])
+    item.destroy
+  rescue ActiveRecord::RecordNotFound
+    not_found
   end
 
   private
