@@ -59,6 +59,27 @@ describe 'Merchants API' do
       expect(merchants.first[:attributes][:name]).to eq(Merchant.all[10].name)
       expect(merchants.last[:attributes][:name]).to eq(Merchant.all[19].name)
     end
+
+    it 'gets one merchant' do
+      merchant1 = create(:merchant)
+
+      get "/api/v1/merchants/#{merchant1.id}"
+
+      expect(response).to be_successful
+
+      body = JSON.parse(response.body, symbolize_names: true)
+      merchant = body[:data]
+
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a(String)
+      expect(merchant[:id]).to eq(merchant1.id.to_s)
+
+      expect(merchant).to have_key(:type)
+      expect(merchant[:type]).to eq('merchant')
+
+      expect(merchant).to have_key(:attributes)
+      expect(merchant[:attributes][:name]).to be_a(String)
+    end
   end
 
   describe 'sad paths' do
@@ -73,6 +94,12 @@ describe 'Merchants API' do
       merchants = body[:data]
 
       expect(merchants).to eq([])
+    end
+
+    xit 'returns 404 with bad merchant id' do
+      get '/api/v1/merchants/12345'
+
+      expect(response.status).to eq(404)
     end
   end
 end
