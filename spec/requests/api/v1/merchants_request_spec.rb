@@ -96,7 +96,7 @@ describe 'Merchants API' do
       expect(merchants).to eq([])
     end
 
-    xit 'returns 404 with bad merchant id' do
+    it 'returns 404 with bad merchant id' do
       get '/api/v1/merchants/12345'
 
       expect(response.status).to eq(404)
