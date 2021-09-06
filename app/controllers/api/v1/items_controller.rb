@@ -36,6 +36,7 @@ class Api::V1::ItemsController < ApplicationController
   def destroy
     item = Item.find(params[:id])
     item.destroy
+    # add destroy method for invoices with single item that is destroyed
     head :no_content
   rescue ActiveRecord::RecordNotFound
     not_found
