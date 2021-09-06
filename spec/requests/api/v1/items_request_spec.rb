@@ -56,6 +56,7 @@ describe 'Items API' do
 
         expect(item).to have_key(:attributes)
         expect(item[:attributes]).to be_a(Hash)
+        expect(item[:attributes].count).to eq(4)
 
         expect(item[:attributes]).to have_key(:name)
         expect(item[:attributes][:name]).to be_a(String)
@@ -65,6 +66,9 @@ describe 'Items API' do
 
         expect(item[:attributes]).to have_key(:unit_price)
         expect(item[:attributes][:unit_price]).to be_a(Float)
+
+        expect(item[:attributes]).to have_key(:merchant_id)
+        expect(item[:attributes][:merchant_id]).to be_an(Integer)
       end
     end
 
@@ -94,7 +98,7 @@ describe 'Items API' do
       expect(items.last[:attributes][:name]).to eq(Item.all[19].name)
     end
 
-    it 'gets one merchant' do
+    it 'gets one item' do
       get "/api/v1/items/#{@item1.id}"
 
       expect(response).to be_successful
@@ -110,6 +114,8 @@ describe 'Items API' do
       expect(item[:type]).to eq('item')
 
       expect(item).to have_key(:attributes)
+      expect(item[:attributes].count).to eq(4)
+
       expect(item[:attributes][:name]).to eq(@item1.name)
       expect(item[:attributes][:description]).to eq(@item1.description)
       expect(item[:attributes][:unit_price]).to eq(@item1.unit_price)
@@ -137,8 +143,53 @@ describe 'Items API' do
 
       expect{ delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
 
-      expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
       expect(response.status).to eq(204)
+    end
+
+    it 'can update an item' do
+      id = @item1.id
+      previous_name = @item1.name
+      previous_description = @item1.description
+      previous_unit_price = @item1.unit_price
+      previous_merchant_id = @item1.merchant_id
+
+
+      item_params = { name: "Charlotte's Web",
+                      description: 'book',
+                      unit_price: 1099.00,
+                      merchant_id: previous_merchant_id
+                    }
+
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      # We include this header to make sure that these params are passed as JSON rather than as plain text
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+
+      item = Item.find_by(id: id)
+
+      expect(response).to be_successful
+      expect(item.name).to_not eq(previous_name)
+      expect(item.name).to eq("Charlotte's Web")
+      expect(item.description).to_not eq(previous_description)
+      expect(item.description).to eq('book')
+      expect(item.unit_price).to_not eq(previous_unit_price)
+      expect(item.unit_price).to eq(1099.00)
+      expect(item.merchant_id).to eq(previous_merchant_id)
+    end
+  end
+
+  describe 'edgecases' do
+    it 'gets page 1 and 20 items if given zero' do
+      get '/api/v1/items?per_page=0&page=0'
+
+      expect(response).to be_successful
+
+      body = JSON.parse(response.body, symbolize_names: true)
+      items = body[:data]
+
+      expect(items.count).to eq(20)
+      expect(items.first[:attributes][:name]).to eq(Item.first.name)
+      expect(items.last[:attributes][:name]).to eq(Item.all[19].name)
     end
 
     it 'should ignore any attributes sent by the user which are not allowed and create the item' do
@@ -156,7 +207,6 @@ describe 'Items API' do
       created_item = Item.last
 
       expect(response).to have_http_status(201)
-      expect(created_item[:sold_price]).to eq(nil)
       expect(created_item.name).to eq(item_params[:name])
       expect(created_item.description).to eq(item_params[:description])
       expect(created_item.unit_price).to eq(item_params[:unit_price])
@@ -164,8 +214,32 @@ describe 'Items API' do
 
       expect{ delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
 
-      expect{Item.find(created_item.id)}.to raise_error(ActiveRecord::RecordNotFound)
       expect(response.status).to eq(204)
+    end
+
+    it 'can update an item with 1 attribute adjusted' do
+      id = @item1.id
+      previous_name = @item1.name
+      previous_description = @item1.description
+      previous_unit_price = @item1.unit_price
+      previous_merchant_id = @item1.merchant_id
+
+
+      item_params = { name: "Charlotte's Web" }
+
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      # We include this header to make sure that these params are passed as JSON rather than as plain text
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+
+      item = Item.find_by(id: id)
+
+      expect(response).to be_successful
+      expect(item.name).to_not eq(previous_name)
+      expect(item.name).to eq("Charlotte's Web")
+      expect(item.description).to eq(previous_description)
+      expect(item.unit_price).to eq(previous_unit_price)
+      expect(item.merchant_id).to eq(previous_merchant_id)
     end
   end
 
@@ -198,7 +272,10 @@ describe 'Items API' do
 
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
-      expect(response.status).to eq(422)
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(["Merchant must exist", "Merchant can't be blank", "Merchant can't be blank"])
+      expect(response.status).to eq(400)
     end
 
     it 'returns an error if any attribute is missing with new item post' do
@@ -212,14 +289,31 @@ describe 'Items API' do
 
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
-      expect(response.status).to eq(422)
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(["Unit price can't be blank", "Unit price is not a number"])
+      expect(response.status).to eq(400)
     end
 
     it 'returns not found error if item to be deleted does not exist' do
       item_id = 1345246257
+
       delete "/api/v1/items/#{item_id}"
 
-      expect{Item.find(item_id)}.to raise_error(ActiveRecord::RecordNotFound)
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:error]).to eq('Not found')
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns not found error if item to be updated does not exist' do
+      item_id = 1345246257
+
+      patch "/api/v1/items/#{item_id}"
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:error]).to eq('Not found')
       expect(response.status).to eq(404)
     end
   end
