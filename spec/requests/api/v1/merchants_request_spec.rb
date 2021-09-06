@@ -24,6 +24,7 @@ describe 'Merchants API' do
 
         expect(merchant).to have_key(:attributes)
         expect(merchant[:attributes]).to be_a(Hash)
+        expect(merchant[:attributes].count).to eq(1)
 
         expect(merchant[:attributes]).to have_key(:name)
         expect(merchant[:attributes][:name]).to be_a(String)
@@ -78,7 +79,25 @@ describe 'Merchants API' do
       expect(merchant[:type]).to eq('merchant')
 
       expect(merchant).to have_key(:attributes)
+      expect(merchant[:attributes].count).to eq(1)
       expect(merchant[:attributes][:name]).to eq(merchant1.name)
+    end
+  end
+
+  describe 'edgecase' do
+    it 'gets page 1 and 20 merchants if given zero' do
+      create_list(:merchant, 25)
+
+      get '/api/v1/merchants?per_page=0&page=0'
+
+      expect(response).to be_successful
+
+      body = JSON.parse(response.body, symbolize_names: true)
+      merchants = body[:data]
+
+      expect(merchants.count).to eq(20)
+      expect(merchants.first[:attributes][:name]).to eq(Merchant.first.name)
+      expect(merchants.last[:attributes][:name]).to eq(Merchant.all[19].name)
     end
   end
 
