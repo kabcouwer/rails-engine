@@ -43,7 +43,6 @@ RSpec.describe Item, type: :model do
     @invoice1 = create(:invoice, customer: @customer1, merchant: @merchant1)
     @invoice2 = create(:invoice, customer: @customer1, merchant: @merchant1)
 
-
     @invoice_item1 = create(:invoice_item, invoice: @invoice1, item: @item1)
     @invoice_item2 = create(:invoice_item, invoice: @invoice2, item: @item2)
     @invoice_item3 = create(:invoice_item, invoice: @invoice2, item: @item3)

@@ -62,11 +62,11 @@ describe 'Create and Delete Item API' do
 
       delete "/api/v1/items/#{@item1.id}"
 
-      expect{Invoice.find(invoice1.id)}.to raise_error(ActiveRecord::RecordNotFound)
+      expect { Invoice.find(invoice1.id) }.to raise_error(ActiveRecord::RecordNotFound)
 
       delete "/api/v1/items/#{@item2.id}"
 
-      expect{Invoice.find(invoice2.id)}.to_not raise_error
+      expect { Invoice.find(invoice2.id) }.to_not raise_error
     end
   end
 
@@ -90,7 +90,6 @@ describe 'Create and Delete Item API' do
       expect(created_item.description).to eq(item_params[:description])
       expect(created_item.unit_price).to eq(item_params[:unit_price])
       expect(created_item.merchant_id).to eq(item_params[:merchant_id])
-
 
       expect { delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
 
