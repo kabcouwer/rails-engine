@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class Invoice < ApplicationRecord
-  enum status: { "in progress": 0, cancelled: 1, completed: 2 }
+  enum status: { shipped: 0, returned: 1, packaged: 2 }
 
-  belongs_to :merchant
   belongs_to :customer
+  belongs_to :merchant
   has_many :invoice_items, dependent: :destroy
   has_many :transactions, dependent: :destroy
   has_many :items, through: :invoice_items

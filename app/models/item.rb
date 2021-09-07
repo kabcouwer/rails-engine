@@ -22,4 +22,10 @@ class Item < ApplicationRecord
 
     where('unit_price > ? and unit_price < ?', min.to_f, max.to_f)
   end
+
+  def destroy_invoices_with_solo_item
+    invoices.each do |invoice|
+      invoice.destroy if invoice.items.count == 1
+    end
+  end
 end

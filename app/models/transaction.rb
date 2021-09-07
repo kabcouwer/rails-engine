@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Transaction < ApplicationRecord
-  enum result: { failed: 0, success: 1 }
+  enum result: { failed: 0, refunded: 1, success: 2 }
 
   belongs_to :invoice
 
