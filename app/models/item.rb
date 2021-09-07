@@ -11,7 +11,19 @@ class Item < ApplicationRecord
   validates :merchant_id, presence: true
   validates :merchant, presence: true
 
-  def self.search(search_params)
-    where('name ILIKE ? or description ILIKE ?', "%#{search_params}%", "%#{search_params}%")
+  def self.name_search(name)
+    where('name ILIKE ? or description ILIKE ?', "%#{name}%", "%#{name}%")
+  end
+
+  def self.price_search(min, max)
+    if min.nil?
+      min = 0
+    end
+
+    if max.nil?
+      max = Float::INFINITY
+    end
+
+    where('unit_price > ? and unit_price < ?', min.to_f, max.to_f)
   end
 end

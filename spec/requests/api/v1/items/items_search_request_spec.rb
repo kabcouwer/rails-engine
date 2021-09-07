@@ -6,10 +6,10 @@ describe 'Items Search API' do
   before :each do
     @merchant1 = create(:merchant)
 
-    @item1 = create(:item, name: 'Titanium Ring', merchant: @merchant1)
-    @item2 = create(:item, description: 'This silver chime will bring you cheer!', merchant: @merchant1)
-    @item3 = create(:item, name: 'Turing', merchant: @merchant1)
-    @item4 = create(:item, merchant: @merchant1)
+    @item1 = create(:item, name: 'Titanium Ring', unit_price: 599.99, merchant: @merchant1)
+    @item2 = create(:item, description: 'This silver chime will bring you cheer!', unit_price: 799.99, merchant: @merchant1)
+    @item3 = create(:item, name: 'Turing', unit_price: 1001.99, merchant: @merchant1)
+    @item4 = create(:item, unit_price: 899.99, merchant: @merchant1)
   end
 
   describe 'happy paths' do
@@ -54,6 +54,48 @@ describe 'Items Search API' do
       expect(items[2][:attributes].count).to eq(4)
       expect(items[2][:attributes][:name]).to eq(@item3.name)
     end
+
+    it 'gets items for min price search' do
+      get '/api/v1/items/find_all?min_price=800'
+
+      expect(response).to be_successful
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      items = body[:data]
+
+      expect(items.count).to eq(2)
+      expect(items[0][:attributes][:name]).to eq(@item3.name)
+      expect(items[1][:attributes][:name]).to eq(@item4.name)
+    end
+
+    it 'gets items for max price search' do
+      get '/api/v1/items/find_all?max_price=800'
+
+      expect(response).to be_successful
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      items = body[:data]
+
+      expect(items.count).to eq(2)
+      expect(items[0][:attributes][:name]).to eq(@item1.name)
+      expect(items[1][:attributes][:name]).to eq(@item2.name)
+    end
+
+    it 'gets items for min and max price search' do
+      get '/api/v1/items/find_all?min_price=600&max_price=900'
+
+      expect(response).to be_successful
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      items = body[:data]
+
+      expect(items.count).to eq(2)
+      expect(items[0][:attributes][:name]).to eq(@item2.name)
+      expect(items[1][:attributes][:name]).to eq(@item4.name)
+    end
   end
 
   describe 'edgecases' do
@@ -71,6 +113,36 @@ describe 'Items Search API' do
   end
 
   describe 'sad paths' do
+    it 'returns error if too many queries exist' do
+      get '/api/v1/items/find_all?name=ring&min_price=600'
+
+      expect(response.status).to eq(400)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(['Name OR either/both price parameters may be sent'])
+    end
+
+    it 'returns error if too many queries exist' do
+      get '/api/v1/items/find_all?name=ring&max_price=600'
+
+      expect(response.status).to eq(400)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(['Name OR either/both price parameters may be sent'])
+    end
+
+    it 'returns error if too many queries exist' do
+      get '/api/v1/items/find_all?name=ring&min_price=600&max_price=900'
+
+      expect(response.status).to eq(400)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(['Name OR either/both price parameters may be sent'])
+    end
+
     it 'returns error if query does not exist' do
       get '/api/v1/items/find_all'
 
@@ -78,7 +150,7 @@ describe 'Items Search API' do
     end
 
     it 'returns error if parameter is empty' do
-      get '/api/v1/merchants/find?name='
+      get '/api/v1/items/find_all?name='
 
       expect(response.status).to eq(404)
     end
