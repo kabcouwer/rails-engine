@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # require database cleaner at the top level
 require 'database_cleaner'
 

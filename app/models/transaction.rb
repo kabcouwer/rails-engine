@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Transaction < ApplicationRecord
   enum result: { failed: 0, success: 1 }
 
