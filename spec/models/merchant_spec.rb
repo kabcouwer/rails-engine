@@ -20,7 +20,7 @@ RSpec.describe Merchant, type: :model do
       merchant4 = Merchant.create!(name: 'Art Shop')
 
       search = 'bOb RoSs'
-      result = Merchant.search(search)
+      result = Merchant.name_search(search)
 
       expect(result).to eq([merchant2, merchant3])
     end

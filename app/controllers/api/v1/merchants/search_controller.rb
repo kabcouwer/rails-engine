@@ -4,7 +4,7 @@ module Api
       class SearchController < ApplicationController
         def find
           if params[:name].present?
-            if (merchant = Merchant.search(params[:name]).first)
+            if (merchant = Merchant.name_search(params[:name]).first)
               render json: MerchantSerializer.new(merchant)
             else
               render json: { data: {} }, status: :ok

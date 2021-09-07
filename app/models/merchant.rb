@@ -6,7 +6,7 @@ class Merchant < ApplicationRecord
 
   validates :name, presence: true
 
-  def self.search(search_params)
+  def self.name_search(search_params)
     order(:name).where("name ILIKE ?", "%#{search_params}%")
   end
 end
