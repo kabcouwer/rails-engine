@@ -4,11 +4,8 @@ module Api
       class SearchController < ApplicationController
         def find_all
           if params[:name].present?
-            if (items = Item.search(params[:name]))
-              render json: ItemSerializer.new(items)
-            else
-              render json: { data: {} }, status: :ok
-            end
+            items = Item.search(params[:name])
+            render json: ItemSerializer.new(items)
           else
             not_found
           end
