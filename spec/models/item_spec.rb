@@ -22,10 +22,26 @@ RSpec.describe Item, type: :model do
     before :each do
       @merchant1 = create(:merchant)
 
-      @item1 = create(:item, name: 'Titanium Ring', unit_price: 599.99, merchant: @merchant1)
-      @item2 = create(:item, description: 'This silver chime will bring you cheer!', unit_price: 799.99, merchant: @merchant1)
-      @item3 = create(:item, name: 'Turing', unit_price: 1001.99, merchant: @merchant1)
-      @item4 = create(:item, unit_price: 899.99, merchant: @merchant1)
+      @item1 = Item.create!(name: 'Titanium Ring',
+                            description: 'desc1',
+                            unit_price: 599.99,
+                            merchant_id: @merchant1.id
+                          )
+      @item2 = Item.create!(name: 'name1',
+                            description: 'This silver chime will bring you cheer!',
+                            unit_price: 799.99,
+                            merchant_id: @merchant1.id
+                          )
+      @item3 = Item.create!(name: 'Turing',
+                            description: 'desc2',
+                            unit_price: 1001.99,
+                            merchant_id: @merchant1.id
+                          )
+      @item4 = Item.create!(name: 'name2',
+                            description: 'desc3',
+                            unit_price: 899.99,
+                            merchant_id: @merchant1.id
+                          )
     end
 
     describe 'class methods' do

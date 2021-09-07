@@ -10,7 +10,7 @@ module Api
               render json: { data: {} }, status: :ok
             end
           else
-            bad_request('errors')
+            bad_request(['Name query must exist'])
           end
         end
       end

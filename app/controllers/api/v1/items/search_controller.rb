@@ -14,7 +14,7 @@ module Api
             items = Item.price_search(params[:min_price], params[:max_price])
             render json: ItemSerializer.new(items) and return
           end
-          bad_request(['Name query must exist', 'Min/max price query must exist'])
+          bad_request(['Name query or Min/max price query must exist'])
         end
 
         private
