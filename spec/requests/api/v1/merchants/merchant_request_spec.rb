@@ -29,7 +29,9 @@ describe 'Merchant API' do
 
   describe 'sad paths' do
     it 'returns 404 with bad merchant id' do
-      get '/api/v1/merchants/12345'
+      id = 12345
+      
+      get "/api/v1/merchants/#{id}"
 
       expect(response.status).to eq(404)
     end
