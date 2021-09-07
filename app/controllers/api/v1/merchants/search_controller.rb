@@ -10,7 +10,7 @@ module Api
               render json: { data: {} }, status: :ok
             end
           else
-            not_found
+            bad_request('errors')
           end
         end
       end

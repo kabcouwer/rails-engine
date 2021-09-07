@@ -50,13 +50,13 @@ describe 'Merchant Search API' do
     it 'returns error if query does not exist' do
       get '/api/v1/merchants/find'
 
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(400)
     end
 
     it 'returns error if parameter is empty' do
       get '/api/v1/merchants/find?name='
 
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(400)
     end
   end
 end

@@ -110,6 +110,26 @@ describe 'Items Search API' do
 
       expect(merchant).to eq([])
     end
+
+    it 'returns error if query does not exist' do
+      get '/api/v1/items/find_all'
+
+      expect(response.status).to eq(400)
+      
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(['Name OR either/both price parameters may be sent'])
+    end
+
+    it 'returns error if parameter is empty' do
+      get '/api/v1/items/find_all?name='
+
+      expect(response.status).to eq(400)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body[:errors]).to eq(['Name OR either/both price parameters may be sent'])
+    end
   end
 
   describe 'sad paths' do
@@ -141,18 +161,6 @@ describe 'Items Search API' do
       body = JSON.parse(response.body, symbolize_names: true)
 
       expect(body[:errors]).to eq(['Name OR either/both price parameters may be sent'])
-    end
-
-    it 'returns error if query does not exist' do
-      get '/api/v1/items/find_all'
-
-      expect(response.status).to eq(404)
-    end
-
-    it 'returns error if parameter is empty' do
-      get '/api/v1/items/find_all?name='
-
-      expect(response.status).to eq(404)
     end
   end
 end
