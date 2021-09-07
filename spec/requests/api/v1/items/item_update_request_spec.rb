@@ -15,17 +15,15 @@ describe 'Update Item API' do
       previous_unit_price = @item1.unit_price
       previous_merchant_id = @item1.merchant_id
 
-
       item_params = { name: "Charlotte's Web",
                       description: 'book',
                       unit_price: 1099.00,
-                      merchant_id: previous_merchant_id
-                    }
+                      merchant_id: previous_merchant_id }
 
-      headers = {"CONTENT_TYPE" => "application/json"}
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
       # We include this header to make sure that these params are passed as JSON rather than as plain text
-      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
 
       item = Item.find_by(id: id)
 
@@ -48,13 +46,12 @@ describe 'Update Item API' do
       previous_unit_price = @item1.unit_price
       previous_merchant_id = @item1.merchant_id
 
-
       item_params = { name: "Charlotte's Web" }
 
-      headers = {"CONTENT_TYPE" => "application/json"}
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
       # We include this header to make sure that these params are passed as JSON rather than as plain text
-      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
 
       item = Item.find_by(id: id)
 
@@ -69,7 +66,7 @@ describe 'Update Item API' do
 
   describe 'sad paths' do
     it 'returns not found error if item to be updated does not exist' do
-      item_id = 1345246257
+      item_id = 1_345_246_257
 
       patch "/api/v1/items/#{item_id}"
 

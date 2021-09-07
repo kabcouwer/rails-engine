@@ -10,7 +10,6 @@ describe 'Items Merchant API' do
 
   describe 'happy paths' do
     it 'gets item merchant info' do
-
       get "/api/v1/items/#{@item1.id}/merchant"
 
       expect(response).to be_successful
@@ -36,7 +35,6 @@ describe 'Items Merchant API' do
 
   describe 'sad paths' do
     it 'returns 404 response if merchant not found' do
-
       get '/api/v1/items/983714098375/merchant'
 
       expect(response.status).to eq(404)

@@ -7,7 +7,6 @@ describe 'Items API' do
     @merchant3 = create(:merchant)
     @merchant4 = create(:merchant)
 
-
     @item1 = create(:item, merchant: @merchant1)
     @item2 = create(:item, merchant: @merchant1)
     @item3 = create(:item, merchant: @merchant1)
