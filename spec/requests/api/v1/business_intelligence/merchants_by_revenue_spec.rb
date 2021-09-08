@@ -42,13 +42,13 @@ describe 'BI - Merchants by Revenue API' do
 
     describe 'sad paths' do
       it 'returns error if quantity value is a string' do
-        get "/api/v1/revenue/merchants?quantity=ten"
+        get '/api/v1/revenue/merchants?quantity=ten'
 
         expect(response.status).to eq(400)
       end
 
       it 'returns error if quantity value is 0' do
-        get "/api/v1/revenue/merchants?quantity=0"
+        get '/api/v1/revenue/merchants?quantity=0'
 
         expect(response.status).to eq(400)
 
@@ -58,7 +58,7 @@ describe 'BI - Merchants by Revenue API' do
       end
 
       it 'returns error if quantity value is blank' do
-        get "/api/v1/revenue/merchants?quantity="
+        get '/api/v1/revenue/merchants?quantity='
 
         expect(response.status).to eq(400)
 
@@ -68,7 +68,7 @@ describe 'BI - Merchants by Revenue API' do
       end
 
       it 'returns error if quantity is blank' do
-        get "/api/v1/revenue/merchants"
+        get '/api/v1/revenue/merchants'
 
         expect(response.status).to eq(400)
 

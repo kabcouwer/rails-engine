@@ -20,7 +20,7 @@ FactoryBot.define do
   factory :invoice do
     customer
     merchant
-    status { ['shipped', 'returned', 'packaged'].sample }
+    status { %w[shipped returned packaged].sample }
   end
 
   factory :invoice_item do
@@ -34,7 +34,7 @@ FactoryBot.define do
     credit_card_number { Faker::Business.credit_card_number.delete('-') }
     credit_card_expiration_date { Faker::Business.credit_card_expiry_date }
     invoice
-    result { ['failed', 'refunded', 'success'].sample }
+    result { %w[failed refunded success].sample }
   end
 end
 

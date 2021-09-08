@@ -11,18 +11,18 @@ class Merchant < ApplicationRecord
   end
 
   def self.top_merchants_by_revenue(limit)
-    select("merchants.*",
-      "SUM(invoice_items.quantity * invoice_items.unit_price) AS revenue")
-    .joins(invoices: [:transactions, :invoice_items])
-    .where("transactions.result = 'success' AND invoices.status = 'shipped'")
-    .group(:id)
-    .order('revenue DESC')
-    .limit(limit)
+    select('merchants.*',
+           'SUM(invoice_items.quantity * invoice_items.unit_price) AS revenue')
+      .joins(invoices: %i[transactions invoice_items])
+      .where("transactions.result = 'success' AND invoices.status = 'shipped'")
+      .group(:id)
+      .order('revenue DESC')
+      .limit(limit)
   end
 
   def revenue
     invoices.joins(:transactions, :invoice_items)
-    .where("transactions.result = 'success' AND invoices.status = 'shipped'")
-    .sum("invoice_items.quantity * invoice_items.unit_price")
+            .where("transactions.result = 'success' AND invoices.status = 'shipped'")
+            .sum('invoice_items.quantity * invoice_items.unit_price')
   end
 end
