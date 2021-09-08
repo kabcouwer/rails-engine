@@ -68,7 +68,7 @@ describe 'BI - Merchants by Revenue API' do
       end
 
       it 'returns error if quantity is blank' do
-        get "/api/v1/revenue/merchants?"
+        get "/api/v1/revenue/merchants"
 
         expect(response.status).to eq(400)
 
