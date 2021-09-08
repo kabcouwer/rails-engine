@@ -12,6 +12,10 @@ RSpec.describe Merchant, type: :model do
     it { should validate_presence_of(:name) }
   end
 
+  before :each do
+    revenue_factories
+  end
+
   describe 'class methods' do
     it 'can search by name' do
       merchant1 = Merchant.create!(name: 'Bob happy Ross')
@@ -27,10 +31,6 @@ RSpec.describe Merchant, type: :model do
   end
 
   describe 'revenue class method' do
-    before :each do
-      revenue_factories
-    end
-
     it 'can find top merchants by revenue' do
       limit = 4
       result = Merchant.top_merchants_by_revenue(limit)
@@ -39,6 +39,16 @@ RSpec.describe Merchant, type: :model do
       expect(result[0].revenue > result[1].revenue).to eq(true)
       expect(result[1].revenue > result[2].revenue).to eq(true)
       expect(result[2].revenue > result[3].revenue).to eq(true)
+    end
+  end
+
+  describe 'instance methods' do
+    it 'can find top merchants by revenue' do
+      merchant = Merchant.first
+      result = merchant.revenue
+
+      expect(result).to be_a(Float)
+      expect(result).to eq(merchant.revenue)
     end
   end
 end

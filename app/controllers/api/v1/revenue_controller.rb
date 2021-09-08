@@ -6,6 +6,13 @@ class Api::V1::RevenueController < ApplicationController
     render json: MerchantNameRevenueSerializer.new(merchants)
   end
 
+  def merchant
+    merchant = Merchant.find(params[:id])
+    render json: MerchantRevenueSerializer.new(merchant)
+  rescue ActiveRecord::RecordNotFound
+    not_found
+  end
+
   private
 
   def integer_check

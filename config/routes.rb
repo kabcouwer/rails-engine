@@ -13,8 +13,9 @@ Rails.application.routes.draw do
       resources :items, only: %i[index show create update destroy] do
         resources :merchant, module: 'items', only: [:index]
       end
-      
+
       get 'revenue/merchants', to: 'revenue#top_merchants'
+      get 'revenue/merchants/:id', to: 'revenue#merchant'
     end
   end
 end
