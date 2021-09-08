@@ -4,8 +4,7 @@ module Api
   module V1
     class RevenueController < ApplicationController
       def top_merchants
-        integer_check
-        return if performed?
+        integer_check; return if performed?
 
         merchants = Merchant.top_merchants_by_revenue(params[:quantity])
         render json: MerchantNameRevenueSerializer.new(merchants)

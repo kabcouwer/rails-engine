@@ -17,9 +17,8 @@ class Item < ApplicationRecord
 
   def self.price_search(min, max)
     min = 0 if min.nil?
-
     max = Float::INFINITY if max.nil?
-
+    
     where('unit_price > ? and unit_price < ?', min.to_f, max.to_f)
   end
 

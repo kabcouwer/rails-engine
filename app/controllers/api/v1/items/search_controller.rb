@@ -5,8 +5,7 @@ module Api
     module Items
       class SearchController < ApplicationController
         def find_all
-          check_search_params
-          return if performed?
+          check_search_params; return if performed?
 
           if params[:name].present?
             items = Item.name_search(params[:name])
