@@ -25,4 +25,14 @@ RSpec.describe Merchant, type: :model do
       expect(result).to eq([merchant2, merchant3])
     end
   end
+
+  describe 'revenue class method' do
+    before :each do
+      revenue_factories
+    end
+
+    it 'can find top merchants by revenue' do
+      expect(Merchant.top_merchants_by_revenue(4).length).to eq(4)
+    end
+  end
 end
