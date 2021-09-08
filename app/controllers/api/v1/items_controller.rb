@@ -6,7 +6,7 @@ module Api
       def index
         page = params[:page].to_i.zero? ? 1 : params[:page].to_i
         per_page = params[:per_page].to_i.zero? ? 20 : params[:per_page].to_i
-        items = Item.paginate(page: page, per_page: per_page)
+        items = Item.paginate(page, per_page)
         render json: ItemSerializer.new(items)
       end
 
@@ -31,7 +31,7 @@ module Api
         if item.update(item_params)
           render json: ItemSerializer.new(item)
         else
-          bad_request(item.errors.full_messages)
+          bad_request(item.errors.full_messages) and return
         end
       rescue ActiveRecord::RecordNotFound
         not_found

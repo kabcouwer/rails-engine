@@ -81,7 +81,7 @@ describe 'Update Item API' do
       id = @item1.merchant_id
       item_params = { name: "Charlotte's Web",
                       description: 'book',
-                      unit_price: '1099.00',
+                      unit_price: 'word',
                       merchant_id: id }
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
