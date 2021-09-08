@@ -11,7 +11,7 @@ module Api
             items = Item.name_search(params[:name])
             render json: ItemSerializer.new(items) and return
           end
-
+          
           if params[:min_price].present? || params[:max_price].present?
             items = Item.price_search(params[:min_price], params[:max_price])
             render json: ItemSerializer.new(items) and return

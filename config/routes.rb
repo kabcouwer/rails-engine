@@ -6,12 +6,15 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'merchants/find', to: 'merchants/search#find'
       get 'items/find_all', to: 'items/search#find_all'
+
       resources :merchants, only: %i[index show] do
         resources :items, module: 'merchants', only: [:index]
       end
       resources :items, only: %i[index show create update destroy] do
         resources :merchant, module: 'items', only: [:index]
       end
+      
+      get 'revenue/merchants', to: 'revenue#top_merchants'
     end
   end
 end

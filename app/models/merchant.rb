@@ -16,7 +16,7 @@ class Merchant < ApplicationRecord
     .joins(invoices: [:transactions, :invoice_items])
     .where("transactions.result = 'success' AND invoices.status = 'shipped'")
     .group(:id)
-    .order('revenue desc')
+    .order('revenue DESC')
     .limit(limit)
   end
 end
