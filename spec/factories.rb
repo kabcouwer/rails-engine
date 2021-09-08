@@ -20,7 +20,7 @@ FactoryBot.define do
   factory :invoice do
     customer
     merchant
-    # status { %w[shipped returned packaged].sample }
+    status { ['shipped', 'returned', 'packaged'].sample }
   end
 
   factory :invoice_item do
@@ -34,7 +34,7 @@ FactoryBot.define do
     credit_card_number { Faker::Business.credit_card_number.delete('-') }
     credit_card_expiration_date { Faker::Business.credit_card_expiry_date }
     invoice
-    # result { %w[failed refunded success].sample }
+    result { ['failed', 'refunded', 'success'].sample }
   end
 end
 
@@ -71,46 +71,46 @@ def revenue_factories
   c4 = create(:customer)
 
   # invoices
-  inv1 = create(:invoice, status: :shipped, customer: c1, merchant: m1)
-  inv2 = create(:invoice, status: :shipped, customer: c2, merchant: m1)
-  inv3 = create(:invoice, status: :shipped, customer: c3, merchant: m1)
+  inv1 = create(:invoice, customer: c1, merchant: m1, status: 'shipped')
+  inv2 = create(:invoice, customer: c2, merchant: m1, status: 'shipped')
+  inv3 = create(:invoice, customer: c3, merchant: m1, status: 'shipped')
 
-  inv4 = create(:invoice, status: :shipped, customer: c1, merchant: m2)
+  inv4 = create(:invoice, customer: c1, merchant: m2, status: 'shipped')
 
-  inv5 = create(:invoice, status: :shipped, customer: c1, merchant: m3)
-  inv6 = create(:invoice, status: :shipped, customer: c2, merchant: m3)
-  inv7 = create(:invoice, status: :shipped, customer: c3, merchant: m3)
+  inv5 = create(:invoice, customer: c1, merchant: m3, status: 'shipped')
+  inv6 = create(:invoice, customer: c2, merchant: m3, status: 'shipped')
+  inv7 = create(:invoice, customer: c3, merchant: m3, status: 'shipped')
 
-  inv8 = create(:invoice, status: :shipped, customer: c1, merchant: m4)
-  inv9 = create(:invoice, status: :shipped, customer: c1, merchant: m4)
+  inv8 = create(:invoice, customer: c1, merchant: m4, status: 'shipped')
+  inv9 = create(:invoice, customer: c1, merchant: m4, status: 'shipped')
 
-  inv10 = create(:invoice, status: :shipped, customer: c1, merchant: m5)
-  inv11 = create(:invoice, status: :shipped, customer: c2, merchant: m5)
-  inv12 = create(:invoice, status: :shipped, customer: c3, merchant: m5)
-  inv13 = create(:invoice, status: :shipped, customer: c4, merchant: m5)
+  inv10 = create(:invoice, customer: c1, merchant: m5, status: 'shipped')
+  inv11 = create(:invoice, customer: c2, merchant: m5, status: 'shipped')
+  inv12 = create(:invoice, customer: c3, merchant: m5, status: 'shipped')
+  inv13 = create(:invoice, customer: c4, merchant: m5, status: 'shipped')
 
-  inv14 = create(:invoice, status: :shipped, customer: c1, merchant: m6)
-  inv15 = create(:invoice, status: :shipped, customer: c2, merchant: m6)
+  inv14 = create(:invoice, customer: c1, merchant: m6, status: 'shipped')
+  inv15 = create(:invoice, customer: c2, merchant: m6, status: 'shipped')
 
-  inv16 = create(:invoice, status: :shipped, customer: c1, merchant: m7)
+  inv16 = create(:invoice, customer: c1, merchant: m7, status: 'shipped')
 
   # transaction
-  t1 = create(:transaction, :success, invoice: inv1)
-  t2 = create(:transaction, :success, invoice: inv2)
-  t3 = create(:transaction, :success, invoice: inv3)
-  t4 = create(:transaction, :success, invoice: inv4)
-  t5 = create(:transaction, :success, invoice: inv5)
-  t6 = create(:transaction, :success, invoice: inv6)
-  t7 = create(:transaction, :success, invoice: inv7)
-  t8 = create(:transaction, :success, invoice: inv8)
-  t9 = create(:transaction, :success, invoice: inv9)
-  t10 = create(:transaction, :success, invoice: inv10)
-  t11 = create(:transaction, :success, invoice: inv11)
-  t12 = create(:transaction, :success, invoice: inv12)
-  t13 = create(:transaction, :success, invoice: inv13)
-  t14 = create(:transaction, :success, invoice: inv14)
-  t15 = create(:transaction, :success, invoice: inv15)
-  t16 = create(:transaction, :success, invoice: inv16)
+  t1 = create(:transaction, invoice: inv1, result: 'success')
+  t2 = create(:transaction, invoice: inv2, result: 'success')
+  t3 = create(:transaction, invoice: inv3, result: 'success')
+  t4 = create(:transaction, invoice: inv4, result: 'success')
+  t5 = create(:transaction, invoice: inv5, result: 'success')
+  t6 = create(:transaction, invoice: inv6, result: 'success')
+  t7 = create(:transaction, invoice: inv7, result: 'success')
+  t8 = create(:transaction, invoice: inv8, result: 'success')
+  t9 = create(:transaction, invoice: inv9, result: 'success')
+  t10 = create(:transaction, invoice: inv10, result: 'success')
+  t11 = create(:transaction, invoice: inv11, result: 'success')
+  t12 = create(:transaction, invoice: inv12, result: 'success')
+  t13 = create(:transaction, invoice: inv13, result: 'success')
+  t14 = create(:transaction, invoice: inv14, result: 'success')
+  t15 = create(:transaction, invoice: inv15, result: 'success')
+  t16 = create(:transaction, invoice: inv16, result: 'success')
 
   # invoice_items
   ii1 = create(:invoice_item, invoice: inv1, item: i1)

@@ -11,13 +11,12 @@ class Merchant < ApplicationRecord
   end
 
   def self.top_merchants_by_revenue(limit)
-    wip = select("merchants.*",
+    select("merchants.*",
       "SUM(invoice_items.quantity * invoice_items.unit_price) AS revenue")
     .joins(invoices: [:transactions, :invoice_items])
     .where("transactions.result = 'success' AND invoices.status = 'shipped'")
     .group(:id)
     .order('revenue desc')
     .limit(limit)
-    binding.pry
   end
 end

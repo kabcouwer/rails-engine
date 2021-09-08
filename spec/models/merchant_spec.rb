@@ -32,7 +32,12 @@ RSpec.describe Merchant, type: :model do
     end
 
     it 'can find top merchants by revenue' do
-      expect(Merchant.top_merchants_by_revenue(4).length).to eq(4)
+      result = Merchant.top_merchants_by_revenue(4)
+
+      expect(result.length).to eq(4)
+      expect(result[0].revenue > result[1].revenue).to eq(true)
+      expect(result[1].revenue > result[2].revenue).to eq(true)
+      expect(result[2].revenue > result[3].revenue).to eq(true)
     end
   end
 end

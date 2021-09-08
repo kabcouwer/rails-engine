@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Invoice < ApplicationRecord
-  enum status: { shipped: 0, returned: 1, packaged: 2 }
-
   belongs_to :customer
   belongs_to :merchant
   has_many :invoice_items, dependent: :destroy
