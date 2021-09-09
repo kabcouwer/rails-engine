@@ -32,7 +32,6 @@ class Item < ApplicationRecord
   end
 
   def destroy_items_invoices
-    binding.pry
     invoices.each do |invoice|
       if invoice.items.length == 1
         invoice.destroy

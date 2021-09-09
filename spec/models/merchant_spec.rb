@@ -40,6 +40,15 @@ RSpec.describe Merchant, type: :model do
       expect(result[1].revenue > result[2].revenue).to eq(true)
       expect(result[2].revenue > result[3].revenue).to eq(true)
     end
+
+    it 'can find merchants with most unshipped revenue' do
+      limit = 4
+
+      result = Merchant.top_unshipped_revenue(limit)
+
+      expect(result.count).to eq(limit)
+      expect(result.first).to be_a(Merchant)
+    end
   end
 
   describe 'instance methods' do

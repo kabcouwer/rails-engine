@@ -20,6 +20,9 @@ class Merchant < ApplicationRecord
       .limit(limit)
   end
 
+  def self.top_unshipped_revenue(limit)
+  end
+
   def revenue
     invoices.joins(:transactions, :invoice_items)
             .where("transactions.result = 'success' AND invoices.status = 'shipped'")

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'BI - Merchants by Revenue API' do
+describe 'BI - Merchants by Revenue' do
   before :each do
     revenue_factories
   end

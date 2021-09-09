@@ -39,7 +39,7 @@ module Api
 
       def destroy
         item = Item.find(params[:id])
-        item.destroy_invoices_with_solo_item
+        item.destroy_items_invoices
         item.destroy
         head :no_content
       rescue ActiveRecord::RecordNotFound

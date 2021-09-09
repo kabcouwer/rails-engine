@@ -27,6 +27,9 @@ module Api
         end
       end
 
+      def unshipped
+      end
+
       private
 
       def integer_check
