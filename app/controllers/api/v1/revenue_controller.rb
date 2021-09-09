@@ -17,6 +17,9 @@ module Api
         not_found
       end
 
+      def top_items
+      end
+
       private
 
       def integer_check

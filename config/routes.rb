@@ -13,9 +13,11 @@ Rails.application.routes.draw do
       resources :items, except: [:new] do
         resources :merchant, module: 'items', only: [:index]
       end
-
-      get 'revenue/merchants', to: 'revenue#top_merchants'
-      get 'revenue/merchants/:id', to: 'revenue#merchant'
+      scope :revenue do
+        get 'merchants', to: 'revenue#top_merchants'
+        get 'merchants/:id', to: 'revenue#merchant'
+        get 'items', to: 'revenue#top_items'
+      end
     end
   end
 end

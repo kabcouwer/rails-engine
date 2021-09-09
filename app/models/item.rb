@@ -18,8 +18,17 @@ class Item < ApplicationRecord
   def self.price_search(min, max)
     min = 0 if min.nil?
     max = Float::INFINITY if max.nil?
-    
+
     where('unit_price > ? and unit_price < ?', min.to_f, max.to_f)
+  end
+
+  def self.top_items(limit)
+    select('items.*',
+           'SUM(invoice_items.quantity * invoice_items.unit_price) AS revenue')
+    .joins(invoice_items: [invoice: :transactions])
+    .group(:id)
+    .order('revenue DESC')
+    .limit(limit)
   end
 
   def destroy_invoices_with_solo_item
