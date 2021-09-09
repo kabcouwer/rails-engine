@@ -22,7 +22,7 @@ class Item < ApplicationRecord
     where('unit_price > ? and unit_price < ?', min.to_f, max.to_f)
   end
 
-  def self.top_items(limit)
+  def self.top_items_by_revenue(limit)
     select('items.*',
            'SUM(invoice_items.quantity * invoice_items.unit_price) AS revenue')
     .joins(invoice_items: [invoice: :transactions])
@@ -31,9 +31,12 @@ class Item < ApplicationRecord
     .limit(limit)
   end
 
-  def destroy_invoices_with_solo_item
+  def destroy_items_invoices
+    binding.pry
     invoices.each do |invoice|
-      invoice.destroy if invoice.items.count == 1
+      if invoice.items.length == 1
+        invoice.destroy
+      end
     end
   end
 end

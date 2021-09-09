@@ -84,16 +84,14 @@ RSpec.describe Item, type: :model do
       # happy path
       expect(@item1.invoices.length).to eq(1)
 
-      invoice = @item1.invoices.first
+      @item1.destroy_items_invoices
 
-      @item1.destroy_invoices_with_solo_item
-
-      expect(invoice).to eq(nil)
+      expect(@item1.invoices.length).to eq(0)
 
       # sad path
       expect(@item2.invoices.length).to eq(1)
 
-      @item2.destroy_invoices_with_solo_item
+      @item2.destroy_items_invoices
 
       expect(@item2.invoices.length).to eq(1)
     end
@@ -103,12 +101,15 @@ RSpec.describe Item, type: :model do
     it 'can find top items by revenue' do
       revenue_factories
 
-      limit = 5
+      limit = 4
 
-      result = Item.top_items(limit)
+      result = Item.top_items_by_revenue(limit)
 
-      expect(result.length).to eq(5)
+      expect(result.length).to eq(4)
       expect(result.first).to be_an(Item)
+      expect(result.first.revenue > result[1].revenue).to eq(true)
+      expect(result[1].revenue > result[2].revenue).to eq(true)
+      expect(result[2].revenue > result[3].revenue).to eq(true)
     end
   end
 end

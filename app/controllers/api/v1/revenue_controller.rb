@@ -18,6 +18,13 @@ module Api
       end
 
       def top_items
+        if params[:quantity].present? && params[:quantity].to_i <= 0
+          bad_request(['Quantity needs to be an integer greater than 0'])
+        else
+          limit = params[:quantity].to_i.zero? ? 10 : params[:quantity].to_i
+          items = Item.top_items_by_revenue(limit)
+          render json: ItemRevenueSerializer.new(items)
+        end
       end
 
       private
