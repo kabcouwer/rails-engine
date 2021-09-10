@@ -6,7 +6,24 @@ describe 'Create and Delete Item API' do
   before :each do
     @merchant1 = create(:merchant)
 
-    @item1 = create(:item, merchant: @merchant1)
+    @customer1 = create(:customer)
+
+    @item1 = Item.create!(name: 'Titanium Ring',
+                          description: 'desc1',
+                          unit_price: 599.99,
+                          merchant_id: @merchant1.id)
+    @item2 = Item.create!(name: 'name1',
+                          description: 'This silver chime will bring you cheer!',
+                          unit_price: 799.99,
+                          merchant_id: @merchant1.id)
+    @item3 = Item.create!(name: 'Turing',
+                          description: 'desc2',
+                          unit_price: 1001.99,
+                          merchant_id: @merchant1.id)
+    @item4 = Item.create!(name: 'name2',
+                          description: 'desc3',
+                          unit_price: 899.99,
+                          merchant_id: @merchant1.id)
   end
 
   describe 'happy paths' do
@@ -33,6 +50,23 @@ describe 'Create and Delete Item API' do
       expect { delete "/api/v1/items/#{created_item.id}" }.to change(Item, :count).by(-1)
 
       expect(response.status).to eq(204)
+    end
+
+    it 'deletes invoices if only item on is deleted' do
+      invoice1 = create(:invoice, merchant: @merchant1, customer: @customer1)
+      invoice2 = create(:invoice, merchant: @merchant1, customer: @customer1)
+
+      ii1 = create(:invoice_item, invoice: invoice1, item: @item1)
+      ii2 = create(:invoice_item, invoice: invoice2, item: @item2)
+      ii3 = create(:invoice_item, invoice: invoice2, item: @item3)
+
+      delete "/api/v1/items/#{@item1.id}"
+
+      expect { Invoice.find(invoice1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+
+      delete "/api/v1/items/#{@item2.id}"
+
+      expect { Invoice.find(invoice2.id) }.to_not raise_error
     end
   end
 

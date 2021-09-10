@@ -52,7 +52,6 @@ describe 'Update Item API' do
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      # We include this header to make sure that these params are passed as JSON rather than as plain text
       patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
 
       item = Item.find_by(id: id)
@@ -76,6 +75,20 @@ describe 'Update Item API' do
 
       expect(body[:error]).to eq('Not found')
       expect(response.status).to eq(404)
+    end
+
+    xit 'returns bad request error if item cannot be updated' do
+      id = @item1.merchant_id
+      item_params = { name: "Charlotte's Web",
+                      description: 'book',
+                      unit_price: 'word',
+                      merchant_id: id }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
+
+      expect(response.status).to eq(400)
     end
   end
 end
