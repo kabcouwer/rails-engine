@@ -13,8 +13,8 @@ module Api
       def merchant
         merchant = Merchant.find(params[:id])
         render json: MerchantRevenueSerializer.new(merchant)
-      rescue ActiveRecord::RecordNotFound
-        not_found
+      # rescue ActiveRecord::RecordNotFound
+      #   not_found
       end
 
       def top_items
@@ -28,6 +28,13 @@ module Api
       end
 
       def unshipped
+        if params[:quantity].present? && params[:quantity].to_i <= 0
+          bad_request(['Quantity needs to be an integer greater than 0'])
+        else
+          limit = params[:quantity].to_i.zero? ? 10 : params[:quantity].to_i
+          merchants = Merchant.top_unshipped_revenue(limit)
+          render json: UnshippedOrderSerializer.new(merchants)
+        end
       end
 
       private

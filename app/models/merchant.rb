@@ -13,14 +13,21 @@ class Merchant < ApplicationRecord
   def self.top_merchants_by_revenue(limit)
     select('merchants.*',
            'SUM(invoice_items.quantity * invoice_items.unit_price) AS revenue')
-      .joins(invoices: [:transactions, :invoice_items])
-      .where("transactions.result = 'success' AND invoices.status = 'shipped'")
-      .group(:id)
-      .order('revenue DESC')
-      .limit(limit)
+    .joins(invoices: [:transactions, :invoice_items])
+    .where("transactions.result = 'success' AND invoices.status = 'shipped'")
+    .group(:id)
+    .order('revenue DESC')
+    .limit(limit)
   end
 
   def self.top_unshipped_revenue(limit)
+    select('merchants.*',
+           'SUM(invoice_items.quantity * invoice_items.unit_price) AS potential_revenue')
+    .joins(invoices: [:transactions, :invoice_items])
+    .where("transactions.result = 'success' AND invoices.status = 'packaged'")
+    .group(:id)
+    .order('potential_revenue DESC')
+    .limit(limit)
   end
 
   def revenue
